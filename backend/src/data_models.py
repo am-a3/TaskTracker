@@ -10,7 +10,11 @@ class ProjectBasic(BaseModel):
 class Project(ProjectBasic):
     description: Optional[str] = None
 
-class Location(BaseModel):
+class LocationBasic(BaseModel):
+    id: str
+    name: str
+
+class Location(LocationBasic):
     id: str
     name: str
     description: Optional[str] = None
