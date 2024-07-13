@@ -19,9 +19,11 @@ class Location(LocationBasic):
     name: str
     description: Optional[str] = None
 
-class Tag(BaseModel):
+class TagBasic(BaseModel):
     id: str
     name: str
+
+class Tag(TagBasic):
     description: Optional[str] = None
 
 class TaskBasic(BaseModel):

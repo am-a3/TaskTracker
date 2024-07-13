@@ -113,6 +113,34 @@ class MongoDbClient:
             return None
         return ObjectId(task_id)
 
+# Tags related:
+
+    async def request_all_tags(self) -> list[dict]:
+        tag_collection = self.db[TAG_COLLECTION_NAME]
+        cursor = tag_collection.find({},{ "description": 0 })
+        tags = await cursor.to_list(None)
+        return [self.__to_dict(tag) for tag in tags]
+    
+    async def request_tag(self, tag_id: str) -> dict:
+        tag_collection = self.db[TAG_COLLECTION_NAME]
+        tag = await tag_collection.find_one({"_id": ObjectId(tag_id)})
+        if tag is not None:
+            tag["id"] = str(tag["_id"])
+        return tag
+    
+    async def insert_tag(self, tag: dict) -> ObjectId:
+        tag_collection = self.db[TAG_COLLECTION_NAME]
+        del tag["id"]
+        result = await tag_collection.insert_one(tag)
+        return result
+    
+    async def delete_tag(self, tag_id: str) -> ObjectId | None:
+        tag_collection = self.db[TAG_COLLECTION_NAME]
+        result = await tag_collection.delete_one({"_id": ObjectId(tag_id)})
+        if result.deleted_count != 1:
+            return None
+        return ObjectId(tag_id)
+
 if __name__ == '__main__':
     db_client = MongoDbClient("mongodb://localhost:27017/", "task_db")
     loop = asyncio.new_event_loop()

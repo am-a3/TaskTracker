@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from contextlib import asynccontextmanager
-from data_models import ProjectBasic, Project, LocationBasic, Location, Tag, TaskBasic, Task
+from data_models import ProjectBasic, Project, LocationBasic, Location, TagBasic, Tag, TaskBasic, Task
 from typing import List, Dict
 from mongodb_client import MongoDbClient
 from fastapi.encoders import jsonable_encoder
 
-db_client = MongoDbClient("mongodb://localhost:27017/", "task_db")
+db_client = Depends(MongoDbClient("mongodb://localhost:27017/", "task_db"))
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -110,14 +110,26 @@ async def delete_task(task_id: str):
 
 # Tag related:
 
-@app.get("/tags", response_model=List[Tag])
+@app.get("/tags", response_model=List[TagBasic])
 async def read_tags() -> list[Tag]:
-    return [{"id": 0, "name": "tag"}]
+    tags = await db_client.request_all_tags()
+    return tags
 
 @app.get("/tags/{tag_id}", response_model=Tag)
 async def read_tag(tag_id: str) -> Tag:
-    return {"id": tag_id, "name": "tag"}
+    tag = await db_client.request_tag(tag_id)
+
+    if tag is None:
+        raise HTTPException(status_code=404, detail="Tag not found")
+
+    return tag
 
 @app.post("/tags/", response_model=Tag)
 async def create_tag(tag: Tag):
-    return tag
+    tag_json = jsonable_encoder(tag)
+    await db_client.insert_tag(tag_json)
+
+@app.delete("/tags/{tag_id}")
+async def delete_tag(tag_id: str):
+    await db_client.delete_tag(tag_id)
+    return {"message": "Tag deleted successfully"}
