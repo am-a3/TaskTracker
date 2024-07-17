@@ -1,11 +1,17 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from data_models import ProjectBasic, Project, LocationBasic, Location, TagBasic, Tag, TaskBasic, Task
-from typing import List, Dict
+from typing import List
 from mongodb_client import MongoDbClient
 from fastapi.encoders import jsonable_encoder
+from dotenv import load_dotenv
+import os
 
-db_client = Depends(MongoDbClient("mongodb://localhost:27017/", "task_db"))
+load_dotenv()
+if os.getenv('USE_TEST_DB', 'False') == 'True':
+    db_client = MongoDbClient(os.getenv('DB_URL'), os.getenv('TEST_DB_NAME'))
+else:
+    db_client = MongoDbClient(os.getenv('DB_URL'), os.getenv('DB_NAME'))
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
