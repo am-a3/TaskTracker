@@ -43,7 +43,7 @@ class MongoDbClient:
         project_collection = self.db[PROJECT_COLLECTION_NAME]
         del project["id"]
         result = await project_collection.insert_one(project)
-        return result
+        return str(result.inserted_id)
     
     async def delete_project(self, project_id: str) -> ObjectId | None:
         project_collection = self.db[PROJECT_COLLECTION_NAME]

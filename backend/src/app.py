@@ -46,11 +46,11 @@ async def read_project_tasks(project_id: str) -> list[dict]:
     tasks = await db_client.request_project_task(project_id)
     return tasks
 
-@app.post("/projects/", response_model=Project)
+@app.post("/projects/")
 async def create_project(project: Project):
     project_json = jsonable_encoder(project)
-    await db_client.insert_project(project_json)
-    return project
+    __id = await db_client.insert_project(project_json)
+    return {"id":__id}
 
 @app.delete("/projects/{project_id}")
 async def delete_project(project_id: str):

@@ -15,8 +15,6 @@ class LocationBasic(BaseModel):
     name: str
 
 class Location(LocationBasic):
-    id: str
-    name: str
     description: Optional[str] = None
 
 class TagBasic(BaseModel):
