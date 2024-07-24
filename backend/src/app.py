@@ -78,10 +78,11 @@ async def read_location_tasks(location_id: str) -> list[TaskBasic]:
     tasks = await db_client.request_location_task(location_id)
     return tasks
 
-@app.post("/locations/", response_model=Location)
+@app.post("/locations/")
 async def create_location(location: Location):
     location_json = jsonable_encoder(location)
-    await db_client.insert_location(location_json)
+    __id = await db_client.insert_location(location_json)
+    return {"id":__id}
 
 @app.delete("/locations/{location_id}")
 async def delete_location(location_id: str):
@@ -107,7 +108,8 @@ async def read_task(task_id: str) -> Task:
 @app.post("/tasks/", response_model=Task)
 async def create_task(task: Task):
     task_json = jsonable_encoder(task)
-    await db_client.insert_task(task_json)
+    __id = await db_client.insert_task(task_json)
+    return {"id":__id}
 
 @app.delete("/tasks/{task_id}")
 async def delete_task(task_id: str):
@@ -133,7 +135,8 @@ async def read_tag(tag_id: str) -> Tag:
 @app.post("/tags/", response_model=Tag)
 async def create_tag(tag: Tag):
     tag_json = jsonable_encoder(tag)
-    await db_client.insert_tag(tag_json)
+    __id = await db_client.insert_tag(tag_json)
+    return {"id":__id}
 
 @app.delete("/tags/{tag_id}")
 async def delete_tag(tag_id: str):

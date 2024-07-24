@@ -10,9 +10,13 @@ import pytest_asyncio
 
 pytestmark = pytest.mark.asyncio(scope="module")
 
-__test_project_1 = {"id" : "0", "name": "test", "description" : "For testing"}
-__test_project_2 = {"id" : "0", "name": "test 2", "description" : "For testing 2"}
-__test_project_3 = {"id" : "0", "name": "test 3", "description" : "For testing 3"}
+__test_project_1 = {"id" : "0", "name": "project test", "description" : "For testing"}
+__test_project_2 = {"id" : "0", "name": "project test 2", "description" : "For testing 2"}
+__test_project_3 = {"id" : "0", "name": "project test 3", "description" : "For testing 3"}
+
+__test_location_1 = {"id" : "0", "name": "location test", "description" : "For testing"}
+__test_location_2 = {"id" : "0", "name": "location test 2", "description" : "For testing 2"}
+__test_location_3 = {"id" : "0", "name": "location test 3", "description" : "For testing 3"}
 
 def __compare_dict_without_id(test: dict, reference: dict, exclude: list[str]) -> bool:
     for key in reference:
@@ -108,5 +112,67 @@ async def test_delete_projects():
     #check that project has been removed:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get("/projects")
+    assert response.status_code == 200
+    assert response.json() == []
+
+async def test_read_write_location():
+    await clear_db()
+
+    # test no locations:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/locations")
+    assert response.status_code == 200
+    assert response.json() == []
+
+    # test one location:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/locations/",
+                          json = __test_location_1
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/locations/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_location_1, ["id", "description"])
+
+    #test multiple locations:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/locations/",
+                          json = __test_location_2
+                          )
+    assert response.status_code == 200
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/locations")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json()[0], __test_location_1, ["id", "description"])
+    assert __compare_dict_without_id(response.json()[1], __test_location_2, ["id", "description"])
+
+async def test_delete_locations():
+    await clear_db()
+    #add project:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/locations/",
+                          json = __test_location_3
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    #check that it has been added:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/locations/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_location_3, ["id", "description"])
+
+    #delete project:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/locations/{__id}")
+    assert response.status_code == 200
+
+    #check that project has been removed:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/locations")
     assert response.status_code == 200
     assert response.json() == []

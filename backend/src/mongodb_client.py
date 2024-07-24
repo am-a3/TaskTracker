@@ -77,7 +77,7 @@ class MongoDbClient:
         location_collection = self.db[LOCATION_COLLECTION_NAME]
         del location["id"]
         result = await location_collection.insert_one(location)
-        return result
+        return str(result.inserted_id)
     
     async def delete_location(self, location_id: str) -> ObjectId | None:
         location_collection = self.db[LOCATION_COLLECTION_NAME]
@@ -104,7 +104,7 @@ class MongoDbClient:
         task_collection = self.db[TASK_COLLECTION_NAME]
         del task["id"]
         result = await task_collection.insert_one(task)
-        return result
+        return str(result.inserted_id)
     
     async def delete_task(self, task_id: str) -> ObjectId | None:
         task_collection = self.db[TASK_COLLECTION_NAME]
@@ -132,7 +132,7 @@ class MongoDbClient:
         tag_collection = self.db[TAG_COLLECTION_NAME]
         del tag["id"]
         result = await tag_collection.insert_one(tag)
-        return result
+        return str(result.inserted_id)
     
     async def delete_tag(self, tag_id: str) -> ObjectId | None:
         tag_collection = self.db[TAG_COLLECTION_NAME]
