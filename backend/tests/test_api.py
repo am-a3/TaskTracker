@@ -18,6 +18,14 @@ __test_location_1 = {"id" : "0", "name": "location test", "description" : "For t
 __test_location_2 = {"id" : "0", "name": "location test 2", "description" : "For testing 2"}
 __test_location_3 = {"id" : "0", "name": "location test 3", "description" : "For testing 3"}
 
+__test_task_1 = {"id" : "0", "name": "task test", "description" : "For testing"}
+__test_task_2 = {"id" : "0", "name": "task test 2", "description" : "For testing 2"}
+__test_task_3 = {"id" : "0", "name": "task test 3", "description" : "For testing 3"}
+
+__test_tag_1 = {"id" : "0", "name": "tag test", "description" : "For testing"}
+__test_tag_2 = {"id" : "0", "name": "tag test 2", "description" : "For testing 2"}
+__test_tag_3 = {"id" : "0", "name": "tag test 3", "description" : "For testing 3"}
+
 def __compare_dict_without_id(test: dict, reference: dict, exclude: list[str]) -> bool:
     for key in reference:
         if key in exclude:
@@ -31,7 +39,6 @@ def __compare_dict_without_id(test: dict, reference: dict, exclude: list[str]) -
         
     return True
 
-#@pytest_asyncio.fixture(scope="module")
 async def clear_db():
     load_dotenv()
     client = AsyncIOMotorClient(os.getenv('DB_URL'))
@@ -115,7 +122,7 @@ async def test_delete_projects():
     assert response.status_code == 200
     assert response.json() == []
 
-async def test_read_write_location():
+async def test_read_write_locations():
     await clear_db()
 
     # test no locations:
@@ -152,7 +159,7 @@ async def test_read_write_location():
 
 async def test_delete_locations():
     await clear_db()
-    #add project:
+    #add location:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/locations/",
                           json = __test_location_3
@@ -166,13 +173,137 @@ async def test_delete_locations():
     assert response.status_code == 200
     assert __compare_dict_without_id(response.json(), __test_location_3, ["id", "description"])
 
-    #delete project:
+    #delete location:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.delete(f"/locations/{__id}")
     assert response.status_code == 200
 
-    #check that project has been removed:
+    #check that location has been removed:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get("/locations")
+    assert response.status_code == 200
+    assert response.json() == []
+
+async def test_read_write_tasks():
+    await clear_db()
+
+    # test no tasks:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tasks")
+    assert response.status_code == 200
+    assert response.json() == []
+
+    # test one task:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tasks/",
+                          json = __test_task_1
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tasks/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_task_1, ["id", "description"])
+
+    #test multiple tasks:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tasks/",
+                          json = __test_task_2
+                          )
+    assert response.status_code == 200
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tasks")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json()[0], __test_task_1, ["id", "description"])
+    assert __compare_dict_without_id(response.json()[1], __test_task_2, ["id", "description"])
+
+async def test_delete_tasks():
+    await clear_db()
+    #add task:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tasks/",
+                          json = __test_task_3
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    #check that it has been added:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tasks/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_task_3, ["id", "description"])
+
+    #delete task:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/tasks/{__id}")
+    assert response.status_code == 200
+
+    #check that task has been removed:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tasks")
+    assert response.status_code == 200
+    assert response.json() == []
+
+async def test_read_write_tags():
+    await clear_db()
+
+    # test no tags:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tags")
+    assert response.status_code == 200
+    assert response.json() == []
+
+    # test one tag:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tags/",
+                          json = __test_tag_1
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tags/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_tag_1, ["id", "description"])
+
+    #test multiple tags:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tags/",
+                          json = __test_tag_2
+                          )
+    assert response.status_code == 200
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tags")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json()[0], __test_tag_1, ["id", "description"])
+    assert __compare_dict_without_id(response.json()[1], __test_tag_2, ["id", "description"])
+
+async def test_delete_tags():
+    await clear_db()
+    #add tag:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post("/tags/",
+                          json = __test_tag_3
+                          )
+    assert response.status_code == 200
+    __id = response.json()["id"]
+
+    #check that it has been added:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tags/{__id}")
+    assert response.status_code == 200
+    assert __compare_dict_without_id(response.json(), __test_tag_3, ["id", "description"])
+
+    #delete tag:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/tags/{__id}")
+    assert response.status_code == 200
+
+    #check that tag has been removed:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get("/tags")
     assert response.status_code == 200
     assert response.json() == []

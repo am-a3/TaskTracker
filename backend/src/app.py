@@ -105,7 +105,7 @@ async def read_task(task_id: str) -> Task:
 
     return task
 
-@app.post("/tasks/", response_model=Task)
+@app.post("/tasks/")
 async def create_task(task: Task):
     task_json = jsonable_encoder(task)
     __id = await db_client.insert_task(task_json)
@@ -132,7 +132,7 @@ async def read_tag(tag_id: str) -> Tag:
 
     return tag
 
-@app.post("/tags/", response_model=Tag)
+@app.post("/tags/")
 async def create_tag(tag: Tag):
     tag_json = jsonable_encoder(tag)
     __id = await db_client.insert_tag(tag_json)

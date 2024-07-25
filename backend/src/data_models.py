@@ -32,5 +32,5 @@ class TaskBasic(BaseModel):
 class Task(TaskBasic):
     project_id: Optional[str] = None
     location_id: Optional[str] = None
-    is_done: str
+    is_done: Optional[str] = None
     tags: Optional[list[str]] = None # tag ids
