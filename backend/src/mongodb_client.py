@@ -12,6 +12,9 @@ class MongoDbClient:
         self.client = AsyncIOMotorClient(url)
         self.db = self.client[db_name]
 
+    def __del__(self):
+        self.client.close()
+
     def __to_dict(self, item: dict) -> dict:
         item = item.copy()  # Make a copy to avoid modifying the original document
         if "_id" in item and isinstance(item["_id"], ObjectId):
@@ -33,7 +36,7 @@ class MongoDbClient:
             project["id"] = str(project["_id"])
         return project
 
-    async def request_project_task(self, project_id: str) -> list[dict]:
+    async def request_project_tasks(self, project_id: str) -> list[dict]:
         task_collection = self.db[TASK_COLLECTION_NAME]
         cursor = task_collection.find({ "project_id": ObjectId(project_id) })
         tasks = await cursor.to_list(None)
