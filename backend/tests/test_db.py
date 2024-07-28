@@ -1,9 +1,8 @@
 import pytest
-import sys
 import os
 from dotenv import load_dotenv
 from ..src.mongodb_client import MongoDbClient
-from common_utils import compare_dict_without_id, clear_db, test_project_1, test_project_2, test_project_3,\
+from .common_utils import compare_dict_without_id, clear_db, test_project_1, test_project_2, test_project_3,\
                             test_location_1, test_location_2, test_location_3, test_task_1, test_task_2, test_task_3,\
                             test_tag_1, test_tag_2, test_tag_3
 
