@@ -20,5 +20,5 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        export PATH="$PATH:$(pwd)/src"
+        export PYTHONPATH="$PYTHONPATH:$(pwd)/src"
         pytest --asyncio-mode=auto -v
