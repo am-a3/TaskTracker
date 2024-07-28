@@ -20,6 +20,8 @@ test_tag_1 = {"id" : "0", "name": "tag test", "description" : "For testing"}
 test_tag_2 = {"id" : "0", "name": "tag test 2", "description" : "For testing 2"}
 test_tag_3 = {"id" : "0", "name": "tag test 3", "description" : "For testing 3"}
 
+NOT_VALID_ID = "1234a"
+
 def compare_dict_without_id(test: dict, reference: dict, exclude: list[str]) -> bool:
     for key in reference:
         if key in exclude:

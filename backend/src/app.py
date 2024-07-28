@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from data_models import ProjectBasic, Project, LocationBasic, Location, TagBasic, Tag, TaskBasic, Task
@@ -5,7 +6,13 @@ from typing import List
 from mongodb_client import MongoDbClient
 from fastapi.encoders import jsonable_encoder
 from dotenv import load_dotenv
-import os
+from bson import ObjectId
+
+def __is_id_valid(id: str):
+    if ObjectId.is_valid(id):
+        return True
+    else:
+        return False
 
 load_dotenv()
 if os.getenv('USE_TEST_DB', 'False') == 'True':
@@ -34,6 +41,9 @@ async def read_projects() -> list[ProjectBasic]:
 
 @app.get("/projects/{project_id}", response_model=Project)
 async def read_project(project_id: str) -> Project | None:
+    if __is_id_valid(project_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     project = await db_client.request_project(project_id)
 
     if project is None:
@@ -43,6 +53,9 @@ async def read_project(project_id: str) -> Project | None:
 
 @app.get("/projects/{project_id}/tasks", response_model=List[TaskBasic])
 async def read_project_tasks(project_id: str) -> list[dict]:
+    if __is_id_valid(project_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     tasks = await db_client.request_project_task(project_id)
     return tasks
 
@@ -54,6 +67,9 @@ async def create_project(project: Project):
 
 @app.delete("/projects/{project_id}")
 async def delete_project(project_id: str):
+    if __is_id_valid(project_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     await db_client.delete_project(project_id)
     return {"message": "Project deleted successfully"}
 
@@ -66,6 +82,9 @@ async def read_locations() -> list[LocationBasic]:
 
 @app.get("/locations/{location_id}", response_model=Location)
 async def read_location(location_id: str) -> Location:
+    if __is_id_valid(location_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     location = await db_client.request_location(location_id)
 
     if location is None:
@@ -75,6 +94,9 @@ async def read_location(location_id: str) -> Location:
 
 @app.get("/locations/{location_id}/tasks", response_model=List[TaskBasic])
 async def read_location_tasks(location_id: str) -> list[TaskBasic]:
+    if __is_id_valid(location_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     tasks = await db_client.request_location_task(location_id)
     return tasks
 
@@ -86,6 +108,9 @@ async def create_location(location: Location):
 
 @app.delete("/locations/{location_id}")
 async def delete_location(location_id: str):
+    if __is_id_valid(location_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     await db_client.delete_location(location_id)
     return {"message": "Location deleted successfully"}
 
@@ -98,6 +123,9 @@ async def read_tasks() -> list[dict]:
 
 @app.get("/tasks/{task_id}", response_model=Task)
 async def read_task(task_id: str) -> Task:
+    if __is_id_valid(task_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     task = await db_client.request_task(task_id)
 
     if task is None:
@@ -113,6 +141,9 @@ async def create_task(task: Task):
 
 @app.delete("/tasks/{task_id}")
 async def delete_task(task_id: str):
+    if __is_id_valid(task_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     await db_client.delete_task(task_id)
     return {"message": "Task deleted successfully"}
 
@@ -125,6 +156,9 @@ async def read_tags() -> list[Tag]:
 
 @app.get("/tags/{tag_id}", response_model=Tag)
 async def read_tag(tag_id: str) -> Tag:
+    if __is_id_valid(tag_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     tag = await db_client.request_tag(tag_id)
 
     if tag is None:
@@ -140,5 +174,8 @@ async def create_tag(tag: Tag):
 
 @app.delete("/tags/{tag_id}")
 async def delete_tag(tag_id: str):
+    if __is_id_valid(tag_id) == False:
+        raise HTTPException(status_code=400, detail="ID is not valid")
+
     await db_client.delete_tag(tag_id)
     return {"message": "Tag deleted successfully"}

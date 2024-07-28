@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath('../src'))
 from app import app
 from common_utils import compare_dict_without_id, clear_db, test_project_1, test_project_2, test_project_3,\
                             test_location_1, test_location_2, test_location_3, test_task_1, test_task_2, test_task_3,\
-                            test_tag_1, test_tag_2, test_tag_3
+                            test_tag_1, test_tag_2, test_tag_3, NOT_VALID_ID
 
 
 pytestmark = pytest.mark.asyncio(scope="module")
@@ -26,6 +26,15 @@ async def test_read_write_projects():
     assert response.status_code == 200
     assert response.json() == []
     
+    # test not valid id:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/projects/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/projects/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
     # test one project:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/projects/",
@@ -81,6 +90,15 @@ async def test_delete_projects():
 
 async def test_read_write_locations():
     await clear_db()
+
+    # test not valid id:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/locations/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/locations/{NOT_VALID_ID}")
+    assert response.status_code == 400
 
     # test no locations:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -144,6 +162,15 @@ async def test_delete_locations():
 async def test_read_write_tasks():
     await clear_db()
 
+    # test not valid id:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tasks/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/tasks/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
     # test no tasks:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get("/tasks")
@@ -205,6 +232,15 @@ async def test_delete_tasks():
 
 async def test_read_write_tags():
     await clear_db()
+
+    # test not valid id:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.get(f"/tags/{NOT_VALID_ID}")
+    assert response.status_code == 400
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.delete(f"/tags/{NOT_VALID_ID}")
+    assert response.status_code == 400
 
     # test no tags:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
