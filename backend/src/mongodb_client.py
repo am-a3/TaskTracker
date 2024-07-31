@@ -48,6 +48,14 @@ class MongoDbClient:
         result = await project_collection.insert_one(project)
         return str(result.inserted_id)
     
+    async def update_project(self, project: dict, project_id: str) -> bool:
+        project_collection = self.db[PROJECT_COLLECTION_NAME]
+        result = await project_collection.replace_one({"_id": ObjectId(project_id)}, project)
+        if result.modified_count == 1:
+            return True
+        else:
+            return False
+
     async def delete_project(self, project_id: str) -> ObjectId | None:
         project_collection = self.db[PROJECT_COLLECTION_NAME]
         result = await project_collection.delete_one({"_id": ObjectId(project_id)})
@@ -82,6 +90,14 @@ class MongoDbClient:
         result = await location_collection.insert_one(location)
         return str(result.inserted_id)
     
+    async def update_location(self, location: dict, location_id: str) -> bool:
+        location_collection = self.db[LOCATION_COLLECTION_NAME]
+        result = await location_collection.replace_one({"_id": ObjectId(location_id)}, location)
+        if result.modified_count == 1:
+            return True
+        else:
+            return False
+
     async def delete_location(self, location_id: str) -> ObjectId | None:
         location_collection = self.db[LOCATION_COLLECTION_NAME]
         result = await location_collection.delete_one({"_id": ObjectId(location_id)})
@@ -109,6 +125,14 @@ class MongoDbClient:
         result = await task_collection.insert_one(task)
         return str(result.inserted_id)
     
+    async def update_task(self, task: dict, task_id: str) -> bool:
+        task_collection = self.db[TASK_COLLECTION_NAME]
+        result = await task_collection.replace_one({"_id": ObjectId(task_id)}, task)
+        if result.modified_count == 1:
+            return True
+        else:
+            return False
+
     async def delete_task(self, task_id: str) -> ObjectId | None:
         task_collection = self.db[TASK_COLLECTION_NAME]
         result = await task_collection.delete_one({"_id": ObjectId(task_id)})
@@ -137,6 +161,14 @@ class MongoDbClient:
         result = await tag_collection.insert_one(tag)
         return str(result.inserted_id)
     
+    async def update_tag(self, tag: dict, tag_id: str) -> bool:
+        tag_collection = self.db[TAG_COLLECTION_NAME]
+        result = await tag_collection.replace_one({"_id": ObjectId(tag_id)}, tag)
+        if result.modified_count == 1:
+            return True
+        else:
+            return False
+
     async def delete_tag(self, tag_id: str) -> ObjectId | None:
         tag_collection = self.db[TAG_COLLECTION_NAME]
         result = await tag_collection.delete_one({"_id": ObjectId(tag_id)})

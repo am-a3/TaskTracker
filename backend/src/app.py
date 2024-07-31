@@ -65,6 +65,15 @@ async def create_project(project: Project):
     __id = await db_client.insert_project(project_json)
     return {"id":__id}
 
+@app.put("/projects/{project_id}", response_model=Project)
+async def update_project(project_id: str, project: Project):
+    project_json = jsonable_encoder(project)
+    result = await db_client.update_project(project_json, project_id)
+    if result == False:
+        raise HTTPException(status_code=400, detail="Failed to update")
+    
+    return project_json
+
 @app.delete("/projects/{project_id}")
 async def delete_project(project_id: str):
     if __is_id_valid(project_id) == False:
@@ -106,6 +115,15 @@ async def create_location(location: Location):
     __id = await db_client.insert_location(location_json)
     return {"id":__id}
 
+@app.put("/locations/{location_id}", response_model=Location)
+async def update_location(location_id: str, location: Location):
+    location_json = jsonable_encoder(location)
+    result = await db_client.update_location(location_json, location_id)
+    if result == False:
+        raise HTTPException(status_code=400, detail="Failed to update")
+    
+    return location_json
+
 @app.delete("/locations/{location_id}")
 async def delete_location(location_id: str):
     if __is_id_valid(location_id) == False:
@@ -139,6 +157,15 @@ async def create_task(task: Task):
     __id = await db_client.insert_task(task_json)
     return {"id":__id}
 
+@app.put("/tasks/{task_id}", response_model=Task)
+async def update_task(task_id: str, task: Task):
+    task_json = jsonable_encoder(task)
+    result = await db_client.update_task(task_json, task_id)
+    if result == False:
+        raise HTTPException(status_code=400, detail="Failed to update")
+    
+    return task_json
+
 @app.delete("/tasks/{task_id}")
 async def delete_task(task_id: str):
     if __is_id_valid(task_id) == False:
@@ -171,6 +198,15 @@ async def create_tag(tag: Tag):
     tag_json = jsonable_encoder(tag)
     __id = await db_client.insert_tag(tag_json)
     return {"id":__id}
+
+@app.put("/tags/{tag_id}", response_model=Tag)
+async def update_tag(tag_id: str, tag: Tag):
+    tag_json = jsonable_encoder(tag)
+    result = await db_client.update_tag(tag_json, tag_id)
+    if result == False:
+        raise HTTPException(status_code=400, detail="Failed to update")
+    
+    return tag_json
 
 @app.delete("/tags/{tag_id}")
 async def delete_tag(tag_id: str):
