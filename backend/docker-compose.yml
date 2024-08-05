@@ -1,0 +1,20 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    networks:
+      - task_tracker_network
+
+  task_tracker_app:
+    build: .
+    ports:
+      - "8000:8000"
+    container_name: task_tracker_app
+    networks:
+      - task_tracker_network
+    depends_on:
+      - mongo
+
+networks:
+  task_tracker_network:
+    driver: bridge
