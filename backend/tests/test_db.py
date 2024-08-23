@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from mongodb_client import MongoDbClient
 from common_utils import compare_dict_without_id, clear_db, test_project_1, test_project_2, test_project_3,\
                             test_location_1, test_location_2, test_location_3, test_task_1, test_task_2, test_task_3,\
+                            test_task_done, test_task_not_done, \
                             test_tag_1, test_tag_2, test_tag_3
 
 @pytest.fixture
@@ -124,6 +125,24 @@ async def test_task(create_db_client):
     assert result != None
     task = await client.request_task(task_id)
     assert task == None
+
+async def test_task_done_query(create_db_client):
+    await clear_db()
+    client = create_db_client
+
+    #add test tasks:
+    await client.insert_task(test_task_done)
+    await client.insert_task(test_task_not_done)
+
+    #query done task:
+    task = await client.request_tasks_done(True)
+    assert len(task) == 1
+    assert compare_dict_without_id(task[0], test_task_done, ["id", "description"])
+
+    #query not done task:
+    task = await client.request_tasks_done(False)
+    assert len(task) == 1
+    assert compare_dict_without_id(task[0], test_task_not_done, ["id", "description"])
 
 async def test_tag(create_db_client):
     await clear_db()
