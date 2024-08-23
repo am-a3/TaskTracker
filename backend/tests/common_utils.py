@@ -15,6 +15,9 @@ test_location_3 = {"id" : "0", "name": "location test 3", "description" : "For t
 test_task_1 = {"id" : "0", "name": "task test", "description" : "For testing"}
 test_task_2 = {"id" : "0", "name": "task test 2", "description" : "For testing 2"}
 test_task_3 = {"id" : "0", "name": "task test 3", "description" : "For testing 3"}
+test_task_3 = {"id" : "0", "name": "task test 3", "description" : "For testing 3"}
+test_task_done = {"id" : "0", "name": "task test done", "description" : "For testing done", "is_done" : True}
+test_task_not_done = {"id" : "0", "name": "task test not done", "description" : "For testing not done", "is_done" : False}
 
 test_tag_1 = {"id" : "0", "name": "tag test", "description" : "For testing"}
 test_tag_2 = {"id" : "0", "name": "tag test 2", "description" : "For testing 2"}

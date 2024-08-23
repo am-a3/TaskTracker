@@ -119,6 +119,12 @@ class MongoDbClient:
             task["id"] = str(task["_id"])
         return task
     
+    async def request_tasks_done(self, is_done: bool) -> list[dict]:
+        task_collection = self.db[TASK_COLLECTION_NAME]
+        cursor = task_collection.find({"is_done": is_done},{ "description": 0 })
+        tasks = await cursor.to_list(None)
+        return [self.__to_dict(task) for task in tasks]
+
     async def insert_task(self, task: dict) -> ObjectId:
         task_collection = self.db[TASK_COLLECTION_NAME]
         del task["id"]

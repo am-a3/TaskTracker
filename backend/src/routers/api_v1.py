@@ -132,6 +132,16 @@ async def read_tasks() -> list[dict]:
     tasks = await db_client.request_all_tasks()
     return tasks
 
+@router.get("/tasks/done", response_model=List[TaskBasic])
+async def read_tasks() -> list[dict]:
+    tasks = await db_client.request_tasks_done(True)
+    return tasks
+
+@router.get("/tasks/not_done", response_model=List[TaskBasic])
+async def read_tasks() -> list[dict]:
+    tasks = await db_client.request_tasks_done(False)
+    return tasks
+
 @router.get("/tasks/{task_id}", response_model=Task)
 async def read_task(task_id: str) -> Task:
     if __is_id_valid(task_id) == False:
